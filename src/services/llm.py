@@ -1,7 +1,7 @@
 import os
 
 os.environ["GROQ_API_KEY"] = (
-    "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"  # getpass.getpass()
+    ""  # getpass.getpass()
 )
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
