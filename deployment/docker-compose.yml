@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  chatbot:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile
+    ports:
+      - "8501:8501"
+    depends_on:
+      - qdrant
+    environment:
+      - QDRANT_HOST=localhost
+      - QDRANT_PORT=6333
+
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+
+volumes:
+  qdrant_storage:
