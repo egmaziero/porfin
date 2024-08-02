@@ -10,9 +10,7 @@ class Prompt:
     def __init__(self, system_instructions: str) -> None:
         self.system_instructions = system_instructions
 
-    def get_few_shot_prompt(
-        self, examples: list[Example], user_input: str
-    ) -> list[Example]:
+    def get_few_shot_prompt(self, examples: list[Example]) -> list[Example]:
         # examples = [
         #     {"input": "2+2", "output": "4"},
         #     {"input": "2+3", "output": "5"},

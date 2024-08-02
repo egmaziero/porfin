@@ -18,20 +18,18 @@ class VectorDataBase:
             self.model_name = "intfloat/multilingual-e5-large-instruct"
         self.embedding_model = HuggingFaceEmbeddings(
             model_name=self.model_name,
-            multi_process=True,
             model_kwargs={"device": "cpu"},
             encode_kwargs={"normalize_embeddings": True},
         )
         self.collection_name = "examples_vectorstore"
-        self.url = "http://localhost:6333"
+        self.url = "http://qdrant:6333"
 
         # self.embedding_model = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
-        try:
-            self.vectorstore = QdrantVectorStore.from_existing_collection(
-                url=self.url, collection_name=self.collection_name
-            )
-        except:
-            self.vectorstore = self.create()
+        self.vectorstore = QdrantVectorStore.from_existing_collection(
+            url=self.url,
+            collection_name=self.collection_name,
+            embedding=self.embedding_model,
+        )
 
     def create(self) -> None:
         """Create the vector database with initial examples"""
