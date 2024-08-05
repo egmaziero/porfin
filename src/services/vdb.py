@@ -1,28 +1,32 @@
 import json
 import logging
+import time
 from pathlib import Path
 from langchain_qdrant import QdrantVectorStore
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
 from src.schemas.example import Example
+from src.services.logger import Logger
+from src.services.config import Config
 
-VDB_LOCAL_PATH = Path(__file__).parents[1] / "data"
-DATASET_PATH = Path(__file__).parents[1] / "data/home_schooling.json"
+logger = Logger(name="VectorDataBase").get_logger()
 
 
 class VectorDataBase:
-    def __init__(self, model_name=None) -> None:
-        if model_name is not None:
-            self.model_name = model_name
-        else:
-            self.model_name = "intfloat/multilingual-e5-large-instruct"
+    def __init__(self, config: Config) -> None:
+        logger.info("Starting VectorDataBase...")
+        self.dataset_path = (
+            Path(__file__).parents[1] / "data" / config.get("examples_dataset_file")
+        )
+        self.model_name = config.get("embeddings_model_name")
+        self.config = config.get("examples_to_return")
         self.embedding_model = HuggingFaceEmbeddings(
             model_name=self.model_name,
             model_kwargs={"device": "cpu"},
             encode_kwargs={"normalize_embeddings": True},
         )
-        self.collection_name = "examples_vectorstore"
-        self.url = "http://qdrant:6333"
+        self.collection_name = config.get("vdb_collection")
+        self.url = config.get("vdb_api_url")
 
         # self.embedding_model = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
         self.vectorstore = QdrantVectorStore.from_existing_collection(
@@ -30,9 +34,12 @@ class VectorDataBase:
             collection_name=self.collection_name,
             embedding=self.embedding_model,
         )
+        logger.info("VectorDatabase started")
 
     def create(self) -> None:
         """Create the vector database with initial examples"""
+        logger.info("Creating vectorstore...")
+        start_t = time.time()
         examples_json = json.loads(open(DATASET_PATH, "r").read())
         examples = []
         for example in examples_json:
@@ -53,11 +60,13 @@ class VectorDataBase:
             url=self.url,
             collection_name=self.collection_name,
         )
+        logger.info(f"Vectorstore created in {time.time() - start_t} seconds!")
 
     def search(self, text: str, n: int = 10) -> list[str]:
         """Perform the semantic search given a text"""
+        logger.info(f"Searching vectorstore for: {text}")
         returned_docs = self.vectorstore.similarity_search(text, k=n)
-
+        logger.info(f"Found examples: {returned_docs}")
         return returned_docs
 
     def update(self, examples: list[str]) -> None:

@@ -1,55 +1,64 @@
-import multiprocessing
 from pathlib import Path
 import streamlit as st
-from langchain_core.messages.ai import AIMessage
 
-from src.prompts.prompts import Prompt
-from src.services.vdb import VectorDataBase
-from src.services.llm import LLM
+from src.schemas.message import Message
+from src.schemas.enums import RoleEnum
+from src.services.config import Config
+from src.services.logger import Logger
+from src.services.pipeline import Pipeline
 
+# Path to data directory
+DATA_PATH = Path(__file__).parents[0] / "src/data"
+# Initialize the config utility
+config = Config(config_file=DATA_PATH / "configs.json")
+# Initialize the main pieces of the chatbot
+pipeline = Pipeline(config)  # Main pipeline
 
-DATASET_PATH = Path(__file__).parents[0] / "src/data"
+logger = Logger(name="GUI").get_logger()
 
-with open(DATASET_PATH / "system_instructions.txt", "r") as sys_instruct:
-    prompter = Prompt(sys_instruct.read())
-vdb = VectorDataBase()
-llm = LLM()
-
-
-def get_response(user_input: str) -> str:
-    # given a use input, get the examples
-    examples = vdb.search(user_input)
-    # prepare the few-shot prompt
-    few_shot_prompt = prompter.get_few_shot_prompt(examples)
-    # consult the model
-    response: AIMessage = llm.get_response(few_shot_prompt, user_input)
-
-    return response
+# Initialize the session state
+session_variables = ["messages", "last_used_examples"]
+for session_var in session_variables:
+    if session_var not in st.session_state:
+        st.session_state[session_var] = []
 
 
-st.title("Home Scholling Assistant")
+st.title(config.get("chat_bot_title"))
+st.caption(config.get("chat_bot_description"))
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+with st.sidebar:
+    st.header("Available LLMs")
+    llm_model_name = st.selectbox(
+        "Change", options=config.get("llm_model_name_alternatives")
+    )
+    n_examples = st.number_input(
+        "Number of examples", min_value=0, max_value=10, value=5
+    )
+    st.header("Configuration")
+    st.json(config.current(), expanded=False)
+    st.caption("Current configuration")
+    st.header("Interactions")
+    st.json(st.session_state.last_used_examples, expanded=False)
+    st.caption("Examples")
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+    with st.chat_message(message.role.value):
+        st.markdown(message.content)
 
-if prompt := st.chat_input("Como posso te ajudar hoje?"):
+if prompt := st.chat_input("Como posso te ajudar?"):
     # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state.messages.append(Message(role=RoleEnum.USER, content=prompt))
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        response = st.write_stream(get_response(prompt))
+        response, last_examples = pipeline.execute(prompt, llm_model_name, n_examples)
+        st.session_state.last_used_examples.append(last_examples)
+        st.write(response.content)
     # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
-
-
-if __name__ == "__main__":
-    multiprocessing.freeze_support()
+    st.session_state.messages.append(
+        Message(role=RoleEnum.ASSISTANT, content=response.content)
+    )
