@@ -71,4 +71,4 @@ class VectorDataBase:
 
     def update(self, examples: list[str]) -> None:
         """Update the knownledge database with new examples"""
-        pass
+        return None
