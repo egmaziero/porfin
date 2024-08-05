@@ -40,7 +40,7 @@ class VectorDataBase:
         """Create the vector database with initial examples"""
         logger.info("Creating vectorstore...")
         start_t = time.time()
-        examples_json = json.loads(open(DATASET_PATH, "r").read())
+        examples_json = json.loads(open(self.dataset_path, "r").read())
         examples = []
         for example in examples_json:
             try:
@@ -71,4 +71,5 @@ class VectorDataBase:
 
     def update(self, examples: list[str]) -> None:
         """Update the knownledge database with new examples"""
+        logger.info(f"Updating vectorstore with examples: {examples}")
         return None

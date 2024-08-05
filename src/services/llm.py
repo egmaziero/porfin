@@ -7,7 +7,6 @@ from src.schemas.enums import RoleEnum
 
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.messages.ai import AIMessage
 
 logger = Logger(name="LLM").get_logger()
 
@@ -21,12 +20,12 @@ class LLM:
         logger.info("LLM started")
 
     def get_response(
-        self, prompt: ChatPromptTemplate, input: str, llm_model_name: str = None
+        self, prompt: ChatPromptTemplate, user_input: str, llm_model_name: str = None
     ) -> Message:
         self.model = ChatGroq(model=llm_model_name)
-        logger.info(f"Getting response from LLM. User input: {input}")
+        logger.info(f"Getting response from LLM. User input: {user_input}")
         chain = prompt | self.model
-        response = chain.invoke({"user_input": input})
+        response = chain.invoke({"user_input": user_input})
         logger.info(
             f"Response metadata received from LLM: {response.response_metadata}"
         )
