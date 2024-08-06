@@ -10,7 +10,7 @@ services:
     depends_on:
       - qdrant
     environment:
-      - QDRANT_HOST=localhost
+      - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
 
   qdrant:

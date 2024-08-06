@@ -30,15 +30,17 @@ with st.sidebar:
     st.header("Available LLMs")
     llm_model_name = st.selectbox(
         "Change", options=config.get("llm_model_name_alternatives")
-    )
+    )  # this model name will be used when making a request to the pre-trained llm
     n_examples = st.number_input(
         "Number of examples", min_value=0, max_value=10, value=5
-    )
+    )  # this is the number of examples to be used when creating the few-shot prompt
     st.header("Configuration")
-    st.json(config.current(), expanded=False)
+    st.json(config.current(), expanded=False)  # shows the current configuration
     st.caption("Current configuration")
     st.header("Interactions")
-    st.json(st.session_state.last_used_examples, expanded=False)
+    st.json(
+        st.session_state.last_used_examples, expanded=False
+    )  # list all last interactions with the model
     st.caption("Examples")
 
 # Display chat messages from history on app rerun

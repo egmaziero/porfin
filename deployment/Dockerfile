@@ -20,4 +20,4 @@ RUN pip install -e /app
 EXPOSE 8501
 
 # Command to run the Streamlit app
-CMD ["streamlit", "run", "main.py"]
+CMD ["streamlit", "run", "ChatBot.py"]
