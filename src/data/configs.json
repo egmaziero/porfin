@@ -1,0 +1,19 @@
+{
+    "chat_bot_title": "Homeschooling Assistant",
+    "chat_bot_description": "A chatbot to provide instructions to parents on how to start and conduct homeschooling with kids from several ages.",
+    "llm_api_key": "",
+    "llm_model_name": "llama-3.1-70b-versatile",
+    "llm_model_name_alternatives": [
+        "llama-3.1-70b-versatile",
+        "llama-3.1-8b-instant",
+        "llama3-70b-8192",
+        "llama3-8b-8192",
+        "mixtral-8x7b-32768",
+        "gemma-7b-it"
+    ],
+    "vdb_collection": "examples_vectorstore",
+    "vdb_api_url": "http://qdrant:6333",
+    "system_instructions": "You are a kind assistant to provide instructions to parents on how to start and conduct homeschooling with kids from several ages. You are not allowed to answer questions about other topics besides homeschooling. If you are asked about other topics, refuse gentily saying you are an assistant to talk about homeschooling only",
+    "examples_dataset_file": "homeschooling.json",
+    "embeddings_model_name": "intfloat/multilingual-e5-large-instruct"
+}
