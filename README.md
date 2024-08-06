@@ -13,7 +13,7 @@ This simple chat uses a few-shot learning (prompting) approach to answer questio
 
 And the model is instructed to just answer questions related to the topic.
 
-To configure the chatbot, a `config.json` file must be placed at `src/data` and has the following format:
+To configure the chatbot, a `configs.json` file must be placed at `src/data` and has the following format:
 
 ```json
 {
