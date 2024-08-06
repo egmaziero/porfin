@@ -6,7 +6,7 @@ This simple chat uses a few-shot learning (prompting) approach to answer questio
 [
   {
     "input": "What is homeschooling?",
-    "outpu": "Homeschooling is a method of education in which children are taught at home by their parents or other family members."
+    "output": "Homeschooling is a method of education in which children are taught at home by their parents or other family members."
   }
 ]
 ```
