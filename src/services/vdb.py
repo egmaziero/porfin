@@ -19,7 +19,6 @@ class VectorDataBase:
             Path(__file__).parents[1] / "data" / config.get("examples_dataset_file")
         )
         self.model_name = config.get("embeddings_model_name")
-        self.config = config.get("examples_to_return")
         self.embedding_model = HuggingFaceEmbeddings(
             model_name=self.model_name,
             model_kwargs={"device": "cpu"},
